@@ -21,7 +21,7 @@ module.exports = [
 				"type": "color",
 				"appKey": "backgroundColor", // messageKey for newer clay versions
 				"defaultValue": "0x000000",
-				"sunlight": false,
+				"sunlight": true,
 				"allowGray": true,
 				"label": "Background Color"
 			},
@@ -29,7 +29,7 @@ module.exports = [
 				"type": "color",
 				"appKey": "foregroundColor", // messageKey for newer clay versions
 				"defaultValue": "0xFFFFFF",
-				"sunlight": false,
+				"sunlight": true,
 				"allowGray": true,
 				"label": "Foreground Color"
 			}

@@ -22,10 +22,6 @@ rocky.on("draw", function (e) {
 	watchface.init(e, shouldSwitch, settingData, weatherData);
 	// render watchface
 	watchface.render();
-	// reset switch flag
-	if (shouldSwitch) {
-		shouldSwitch = false;
-	}
 });
 
 /**
@@ -44,9 +40,10 @@ rocky.on("minutechange", function (e) {
 		});
     isFirstRun = false;
   }
-	// check minutes if even --> set switch flag
+	// check minutes if even 
+	//   --> toggle switch flag
 	if (cbDate.getMinutes() % SWITCHTIME === 0) {
-		shouldSwitch = true;		
+		shouldSwitch = !shouldSwitch;
 	}
 	// call on-draw
   rocky.requestDraw();
@@ -72,17 +69,17 @@ rocky.on("hourchange", function (e) {
  */
 rocky.on("message", function (event) {
   // get message data from event
-  var msg = event.data;
+  var msg = event.data;	
 	// check if setting data is available
 	if (msg.settings) {
 		// set setting data
 		settingData = msg.settings;
-		// call redraw
-		rocky.requestDraw();
 	}
   // check if weather data is available
   if (msg.weather) {
     // set weather data
     weatherData = msg.weather;
-  }  
+  }
+	// call redraw
+	rocky.requestDraw();
 });

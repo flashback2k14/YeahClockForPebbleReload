@@ -9,7 +9,8 @@ var config = require("./config");
 var clay = new Clay(config, null, { autoHandleEvents: false });
 
 /**
- * 
+ * send message to rocky/index.js
+ * @param data - setting data
  */
 function _messagePostSettings (data) {
 	Pebble.postMessage({settings: data});
@@ -30,13 +31,13 @@ function _messagePostWeather (data) {
 }
 
 /**
- * 
+ * handle requested settings call
  */
 function _handleRestoreSettingsRequest () {
 	// Restore settings from localStorage and send to watch
-  var settings = JSON.parse(localStorage.getItem('clay-settings'));
+  var settings = JSON.parse(localStorage.getItem("clay-settings"));
   if (settings) {
-    _messagePostSettings(settings);
+		_messagePostSettings(settings);
   }
 }
 

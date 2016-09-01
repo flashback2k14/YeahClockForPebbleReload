@@ -53,12 +53,25 @@ function _createCssColor (color) {
 function _getColor (type) {
 	switch (type) {
 		case "foreground":
-			return _settingData ? _createCssColor(_settingData.foregroundColor) : "white";
+			return _settingData && _settingData.hasOwnProperty("foregroundColor") ? 
+									_createCssColor(_settingData.foregroundColor) : 
+									"white";
 		case "background":
-			return _settingData ? _createCssColor(_settingData.backgroundColor) : "black";
+			return _settingData && _settingData.hasOwnProperty("backgroundColor") ? 
+									_createCssColor(_settingData.backgroundColor) : 
+									"black";
 		default:
 			return "white";
 	}
+}
+
+/**
+ * get hideMiddleRow value from settings or set default value 
+ */
+function _isMiddleRowHidden () {
+	return _settingData && _settingData.hasOwnProperty("hideMiddleRow") ? 
+									_settingData.hideMiddleRow : 
+									"false";
 }
 
 /**
@@ -85,7 +98,7 @@ function _renderTime (dt, wDisp) {
 	// define clock position
   var posX = wDisp / 2;
   // draw clock
-	if (_settingData && _settingData.hideMiddleRow) {
+	if (_isMiddleRowHidden()) {
 		_ctx.fillText(_addZero(hour), posX, 35, wDisp);
 		_ctx.fillText(_addZero(min), posX, 75, wDisp);
 	} else {
@@ -123,7 +136,7 @@ function _renderWeather (hDisp, wDisp) {
 	_ctx.fillStyle = _getColor("foreground");
 	_ctx.textAlign = "center";
 	_ctx.font = "21px Roboto";
-	//
+	// get weather text
 	var wString = _weatherData.celsius + "°C, " + _weatherData.desc;
 	var wsDimens = _ctx.measureText(wString);
 	var posY = (hDisp / 2) - (wsDimens.height / 2);
@@ -159,9 +172,9 @@ function renderWatchface () {
 	// render background
 	_renderBackground();
   // render time
-	_renderTime(currentDateTime, wDisplay);
+	_renderTime(currentDateTime, wDisplay);	
 	// render weather or date
-	if (_settingData && !_settingData.hideMiddleRow) {
+	if (!_isMiddleRowHidden()) {
 		if (_shouldSwitch && _weatherData) {
 			_renderWeather(hDisplay, wDisplay);
 		} else {
