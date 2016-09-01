@@ -48,6 +48,22 @@ module.exports = [
 				"appKey": "hideMiddleRow", // messageKey for newer clay versions
 				"label": "Show / Hide Date and Weather",
 				"defaultValue": false
+			},
+			{
+				"type": "select",
+				"appKey": "temperatureType", // messageKey for newer clay versions
+				"defaultValue": "celsius",
+				"label": "Temperature Type",
+				"options": [
+					{ 
+						"label": "Celsius",
+						"value": "celsius" 
+					},
+					{ 
+						"label": "Fahrenheit",
+						"value": "fahrenheit" 
+					}
+				]
 			}
 		]
 	},

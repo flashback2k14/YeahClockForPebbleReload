@@ -66,12 +66,23 @@ function _getColor (type) {
 }
 
 /**
- * get hideMiddleRow value from settings or set default value 
+ * get hideMiddleRow value from settings or set default value
+ * @return value [Boolean]
  */
 function _isMiddleRowHidden () {
 	return _settingData && _settingData.hasOwnProperty("hideMiddleRow") ? 
 									_settingData.hideMiddleRow : 
-									"false";
+									false;
+}
+
+/**
+ * get temperature type value from settings or set default value
+ * @return temperature type [String]
+ */
+function _getTemperatureType () {
+	return _settingData && _settingData.hasOwnProperty("temperatureType") ? 
+									_settingData.temperatureType : 
+									"celsius";
 }
 
 /**
@@ -97,7 +108,7 @@ function _renderTime (dt, wDisp) {
 	var min  = dt.getMinutes();
 	// define clock position
   var posX = wDisp / 2;
-  // draw clock
+  // draw clock	
 	if (_isMiddleRowHidden()) {
 		_ctx.fillText(_addZero(hour), posX, 35, wDisp);
 		_ctx.fillText(_addZero(min), posX, 75, wDisp);
@@ -137,10 +148,15 @@ function _renderWeather (hDisp, wDisp) {
 	_ctx.textAlign = "center";
 	_ctx.font = "21px Roboto";
 	// get weather text
-	var wString = _weatherData.celsius + "°C, " + _weatherData.desc;
+	var wString = "";
+	if (_getTemperatureType() === "celsius") {
+		wString = _weatherData.celsius + "°C, " + _weatherData.desc;
+	} else {
+		wString = _weatherData.fahrenheit + "°F, " + _weatherData.desc;
+	}		
 	var wsDimens = _ctx.measureText(wString);
 	var posY = (hDisp / 2) - (wsDimens.height / 2);
-	// draw date
+	// draw weather
 	_ctx.fillText(wString, (wDisp / 2), posY, wDisp);
 }
 
@@ -173,7 +189,7 @@ function renderWatchface () {
 	_renderBackground();
   // render time
 	_renderTime(currentDateTime, wDisplay);	
-	// render weather or date
+	// render weather or date	
 	if (!_isMiddleRowHidden()) {
 		if (_shouldSwitch && _weatherData) {
 			_renderWeather(hDisplay, wDisplay);
