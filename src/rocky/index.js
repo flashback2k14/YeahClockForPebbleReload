@@ -8,7 +8,7 @@ var watchface = require("./watchface");
  * init variables
  */
 var SWITCHTIME = 10;
-var FETCHTIME = 30;
+var FETCHTIME = 4;
 var isFirstRun = true;
 var shouldSwitch = false;
 var weatherData = null;
@@ -28,7 +28,7 @@ rocky.on("draw", function (e) {
 });
 
 /**
- * call render watchface 
+ * call render watchface each minute
  */
 rocky.on("minutechange", function (e) {
 	// get callback date
@@ -42,12 +42,20 @@ rocky.on("minutechange", function (e) {
 	if (cbDate.getMinutes() % SWITCHTIME === 0) {
 		shouldSwitch = true;		
 	}
-	// check if minutes mod 30 equals 0 
-	if (cbDate.getMinutes() % FETCHTIME === 0) {
-		rocky.postMessage({fetch: true});
-	}
 	// call on-draw
   rocky.requestDraw();
+});
+
+/**
+ * call request weather data each 4 hours
+ */
+rocky.on("hourchange", function (e) {
+	// get callback date
+	var cbDate = new Date(e.date);
+	// check if hours mod 4 equals 0 
+	if (cbDate.getHours() % FETCHTIME === 0) {
+		rocky.postMessage({fetch: true});
+	}
 });
 
 /**
