@@ -3,6 +3,7 @@
  */
 var _ctx;
 var _shouldSwitch;
+var _settingData;
 var _weatherData;
 
 /**
@@ -18,75 +19,129 @@ function _addZero (number) {
 }
 
 /**
+ * add leading zeros to create valid hex color code
+ * @param color - color
+ * @return color [String]
+ */
+function _padColorString (color) {
+  var tColor = color.toLowerCase();
+  while (tColor.length < 6) {
+    tColor = "0" + tColor;
+  }
+  return tColor;
+}
+
+/**
+ * create css hex color code 
+ * @param color - color
+ * @return color [String]
+ */
+function _createCssColor (color) {
+  if (typeof color === "number") {
+    color = color.toString(16);
+  } else if (!color) {
+    return "transparent";
+  }
+  return "#" + _padColorString(color);
+}
+
+/**
+ * get color from settings or set default color
+ * @param type - foreground | background
+ * @return color [String]
+ */
+function _getColor (type) {
+	switch (type) {
+		case "foreground":
+			return _settingData ? _createCssColor(_settingData.foregroundColor) : "white";
+		case "background":
+			return _settingData ? _createCssColor(_settingData.backgroundColor) : "black";
+		default:
+			return "white";
+	}
+}
+
+/**
+ * render function for background
+ */ 
+function _renderBackground () {
+	_ctx.fillStyle = _getColor("background");
+  _ctx.fillRect(0, 0, _ctx.canvas.clientWidth, _ctx.canvas.clientHeight);
+}
+
+/**
  * render function for time
- * @param ctx - Context
  * @param dt - current dateTime
  * @param wDisp - unobstructedWidth from canvas
  */
-function _renderTime (ctx, dt, wDisp) {
+function _renderTime (dt, wDisp) {
 	// define clock style
-  ctx.fillStyle = "white";
-  ctx.textAlign = "center";
-  ctx.font = "49px Roboto-subset";
+	_ctx.fillStyle = _getColor("foreground");
+  _ctx.textAlign = "center";
+  _ctx.font = "49px Roboto-subset";
   // get time
   var hour = dt.getHours();
 	var min  = dt.getMinutes();
 	// define clock position
   var posX = wDisp / 2;
   // draw clock
-  ctx.fillText(_addZero(hour), posX, 10, wDisp);
-	ctx.fillText(_addZero(min), posX, 100, wDisp);
+	if (_settingData && _settingData.hideMiddleRow) {
+		_ctx.fillText(_addZero(hour), posX, 35, wDisp);
+		_ctx.fillText(_addZero(min), posX, 75, wDisp);
+	} else {
+		_ctx.fillText(_addZero(hour), posX, 10, wDisp);
+		_ctx.fillText(_addZero(min), posX, 100, wDisp);	
+	}
 }
 
 /**
  * render function for date
- * @param ctx - Context
  * @param dt - current dateTime
  * @param hDisp - unobstructedHeigth from canvas
  * @param wDisp - unobstructedWidth from canvas
  */
-function _renderDate (ctx, dt, hDisp, wDisp) {
+function _renderDate (dt, hDisp, wDisp) {
 	// define date style
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.font = "21px Roboto";
+	_ctx.fillStyle = _getColor("foreground");
+	_ctx.textAlign = "center";
+	_ctx.font = "21px Roboto";
 	// get date
 	var date = _addZero(dt.getDate()) + "." + _addZero(dt.getMonth() + 1) + "." + dt.getFullYear();
-	var dateDimens = ctx.measureText(date);
+	var dateDimens = _ctx.measureText(date);
 	var posY = (hDisp / 2) - (dateDimens.height / 2);
 	// draw date
-	ctx.fillText(date, (wDisp / 2), posY, wDisp);	
+	_ctx.fillText(date, (wDisp / 2), posY, wDisp);	
 }
 
 /**
  * render function for weather
- * @param ctx - Context
- * @param wData - weather data
  * @param hDisp - unobstructedHeigth from canvas
  * @param wDisp - unobstructedWidth from canvas
  */
-function _renderWeather (ctx, wData, hDisp, wDisp) {
+function _renderWeather (hDisp, wDisp) {
   // define date style
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.font = "21px Roboto";
+	_ctx.fillStyle = _getColor("foreground");
+	_ctx.textAlign = "center";
+	_ctx.font = "21px Roboto";
 	//
-	var wString = wData.celsius + "°C, " + wData.desc;
-	var wsDimens = ctx.measureText(wString);
+	var wString = _weatherData.celsius + "°C, " + _weatherData.desc;
+	var wsDimens = _ctx.measureText(wString);
 	var posY = (hDisp / 2) - (wsDimens.height / 2);
 	// draw date
-	ctx.fillText(wString, (wDisp / 2), posY, wDisp);
+	_ctx.fillText(wString, (wDisp / 2), posY, wDisp);
 }
 
 /**
  * init global variables
  * @param e - RockyDrawCallback (CanvasRenderingContext2D)
  * @param shouldSwitch - flag to switch middle row
+ * @param settingData - setting data
  * @param weatherData - weather data
  */
-function initVariables (e, shouldSwitch, weatherData) {
+function initVariables (e, shouldSwitch, settingData, weatherData) {
 	_ctx = e.context;
 	_shouldSwitch = shouldSwitch;
+	_settingData = settingData;
 	_weatherData = weatherData;
 }
 
@@ -101,13 +156,17 @@ function renderWatchface () {
 	var hDisplay = _ctx.canvas.unobstructedHeight;
   // get current datetime
   var currentDateTime = new Date();
+	// render background
+	_renderBackground();
   // render time
-	_renderTime(_ctx, currentDateTime, wDisplay);
+	_renderTime(currentDateTime, wDisplay);
 	// render weather or date
-	if (_shouldSwitch && _weatherData) {
-		_renderWeather(_ctx, _weatherData, hDisplay, wDisplay);
-	} else {
-		_renderDate(_ctx, currentDateTime, hDisplay, wDisplay);
+	if (_settingData && !_settingData.hideMiddleRow) {
+		if (_shouldSwitch && _weatherData) {
+			_renderWeather(hDisplay, wDisplay);
+		} else {
+			_renderDate(currentDateTime, hDisplay, wDisplay);
+		}
 	}
 }
 
