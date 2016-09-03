@@ -40,6 +40,76 @@ module.exports = [
 		"items": [
 			{
 				"type": "heading",
+				"defaultValue": "Time Options",
+				"size": 4
+			},
+			{
+				"type": "select",
+				"appKey": "switchingTime", // messageKey for newer clay versions
+				"defaultValue": "10",
+				"label": "Time between switch Date and Weather (min)",
+				"options": [
+					{ 
+						"label": "2",
+						"value": 2 
+					},
+					{ 
+						"label": "5",
+						"value": 5 
+					},
+					{ 
+						"label": "10",
+						"value": 10 
+					},
+					{ 
+						"label": "15",
+						"value": 15 
+					},
+					{ 
+						"label": "20",
+						"value": 20 
+					},
+					{ 
+						"label": "30",
+						"value": 30 
+					}
+				]
+			},
+			{
+				"type": "select",
+				"appKey": "fetchingTime", // messageKey for newer clay versions
+				"defaultValue": "4",
+				"label": "Time between fetching Weather Data (h)",
+				"options": [
+					{ 
+						"label": "1",
+						"value": 1 
+					},
+					{ 
+						"label": "2",
+						"value": 2 
+					},
+					{ 
+						"label": "4",
+						"value": 4 
+					},
+					{ 
+						"label": "8",
+						"value": 8 
+					},
+					{ 
+						"label": "12",
+						"value": 12 
+					}
+				]
+			}
+		]
+	},
+	{
+		"type": "section",
+		"items": [
+			{
+				"type": "heading",
 				"defaultValue": "More Options",
 				"size": 4
 			},

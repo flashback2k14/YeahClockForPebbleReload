@@ -1,7 +1,7 @@
 /**
  * global module variable
  */
-var _apiKey = "89d42f702cf0f8b92d28fbeaad9ecff4";
+var _apiKey = "#######################";
 
 /**
  * build api url

@@ -15,12 +15,33 @@ var settingData = null;
 var weatherData = null;
 
 /**
- * helper function to check if weather api call is needed
+ * helper function 
+ * to check if weather api call is needed
  */
 function _shouldFetch () {
 	return settingData && settingData.hasOwnProperty("hideMiddleRow") ?
 							!settingData.hideMiddleRow :
 							true;
+}
+
+/**
+ * helper function
+ * get switching time for middle row
+ */
+function _getSwitchTime () {
+	return settingData && settingData.hasOwnProperty("switchingTime") ?
+							Number(settingData.switchingTime) :
+							SWITCHTIME;
+}
+
+/**
+ * helper function
+ * get fetching time to call weather api
+ */
+function _getFetchingTime () {
+	return settingData && settingData.hasOwnProperty("fetchingTime") ?
+							Number(settingData.fetchingTime) :
+							FETCHTIME;
 }
 
 /**
@@ -51,7 +72,7 @@ rocky.on("minutechange", function (e) {
   }
 	// check minutes if even 
 	//   --> toggle switch flag
-	if (cbDate.getMinutes() % SWITCHTIME === 0) {
+	if (cbDate.getMinutes() % _getSwitchTime() === 0) {
 		shouldSwitch = !shouldSwitch;
 	}
 	// call on-draw
@@ -67,7 +88,7 @@ rocky.on("hourchange", function (e) {
 		// get callback date
 		var cbDate = new Date(e.date);
 		// check if hours mod 4 equals 0 
-		if (cbDate.getHours() % FETCHTIME === 0) {
+		if (cbDate.getHours() % _getFetchingTime() === 0) {
 			rocky.postMessage({ fetch: true });
 		}
 	}

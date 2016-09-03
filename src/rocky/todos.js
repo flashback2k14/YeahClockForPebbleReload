@@ -3,7 +3,7 @@
  * -- change colors   --> check
  * -- hide middle row --> check
  * -- use fahrenheit  --> check
- * -- add select for switching time
- * -- add select for fetching time
+ * -- add select for switching time --> check
+ * -- add select for fetching time  --> check
  * - add animation for middle row
  */
