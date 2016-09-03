@@ -15,6 +15,15 @@ var settingData = null;
 var weatherData = null;
 
 /**
+ * helper function to check if weather api call is needed
+ */
+function _shouldFetch () {
+	return settingData && settingData.hasOwnProperty("hideMiddleRow") ?
+							!settingData.hideMiddleRow :
+							true;
+}
+
+/**
  * render watchface
  */
 rocky.on("draw", function (e) {
@@ -54,7 +63,7 @@ rocky.on("minutechange", function (e) {
  */
 rocky.on("hourchange", function (e) {
 	// only call weather api if middle row is rendered
-	if (settingData && !settingData.hideMiddleRow) {
+	if (_shouldFetch()) {
 		// get callback date
 		var cbDate = new Date(e.date);
 		// check if hours mod 4 equals 0 

@@ -46,7 +46,7 @@ module.exports = [
 			{
 				"type": "toggle",
 				"appKey": "hideMiddleRow", // messageKey for newer clay versions
-				"label": "Show / Hide Date and Weather",
+				"label": "Hide Date and Weather",
 				"defaultValue": false
 			},
 			{

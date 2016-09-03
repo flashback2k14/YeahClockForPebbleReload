@@ -69,9 +69,17 @@ function _handleWeatherFetchRequest () {
 }
 
 /**
+ * open confige page
+ */
+function _openConfigPage () {
+	Pebble.openURL(clay.generateUrl());
+}
+
+/**
  * fired if pebble is ready
  */
 Pebble.addEventListener("ready", function (e) {
+	_openConfigPage();
   _handleRestoreSettingsRequest();
 });
 
@@ -79,7 +87,7 @@ Pebble.addEventListener("ready", function (e) {
  * open settings page
  */
 Pebble.addEventListener("showConfiguration", function (e) {
-  Pebble.openURL(clay.generateUrl());
+  _openConfigPage();
 });
 
 /**
