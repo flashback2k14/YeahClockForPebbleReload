@@ -7,6 +7,11 @@ var _settingData;
 var _weatherData;
 
 /**
+ * constants
+ */
+var DISPLAYHEIGHT = 168;
+
+/**
  * helper function to add leading zero
  * @param number - hour | minute
  * @return number [String]
@@ -97,8 +102,9 @@ function _renderBackground () {
  * render function for time
  * @param dt - current dateTime
  * @param wDisp - unobstructedWidth from canvas
+ * @param isQuickView - switch layout on quick view
  */
-function _renderTime (dt, wDisp) {
+function _renderTime (dt, wDisp, isQuickView) {
 	// define clock style
 	_ctx.fillStyle = _getColor("foreground");
   _ctx.textAlign = "center";
@@ -108,13 +114,22 @@ function _renderTime (dt, wDisp) {
 	var min  = dt.getMinutes();
 	// define clock position
   var posX = wDisp / 2;
-  // draw clock	
-	if (_isMiddleRowHidden()) {
-		_ctx.fillText(_addZero(hour), posX, 35, wDisp);
-		_ctx.fillText(_addZero(min), posX, 75, wDisp);
+	// check if Quick View is visible 
+	if (isQuickView) {
+		// draw clock
+		_ctx.fillText(_addZero(hour), 42, 25, wDisp);
+		_ctx.fillText(_addZero(min), 100, 25, wDisp);
 	} else {
-		_ctx.fillText(_addZero(hour), posX, 10, wDisp);
-		_ctx.fillText(_addZero(min), posX, 100, wDisp);	
+		// check if middle row is hiddens
+		if (_isMiddleRowHidden()) {
+			// draw clock
+			_ctx.fillText(_addZero(hour), posX, 35, wDisp);
+			_ctx.fillText(_addZero(min), posX, 75, wDisp);
+		} else {
+			// draw clock
+			_ctx.fillText(_addZero(hour), posX, 10, wDisp);
+			_ctx.fillText(_addZero(min), posX, 100, wDisp);	
+		}
 	}
 }
 
@@ -123,8 +138,9 @@ function _renderTime (dt, wDisp) {
  * @param dt - current dateTime
  * @param hDisp - unobstructedHeigth from canvas
  * @param wDisp - unobstructedWidth from canvas
+ * @param isQuickView - switch layout on quick view
  */
-function _renderDate (dt, hDisp, wDisp) {
+function _renderDate (dt, hDisp, wDisp, isQuickView) {
 	// define date style
 	_ctx.fillStyle = _getColor("foreground");
 	_ctx.textAlign = "center";
@@ -134,15 +150,20 @@ function _renderDate (dt, hDisp, wDisp) {
 	var dateDimens = _ctx.measureText(date);
 	var posY = (hDisp / 2) - (dateDimens.height / 2);
 	// draw date
-	_ctx.fillText(date, (wDisp / 2), posY, wDisp);	
+	if (isQuickView) {
+		_ctx.fillText(date, (wDisp / 2), 80, wDisp);	
+	} else {
+		_ctx.fillText(date, (wDisp / 2), posY, wDisp);		
+	}
 }
 
 /**
  * render function for weather
  * @param hDisp - unobstructedHeigth from canvas
  * @param wDisp - unobstructedWidth from canvas
+ * @param isQuickView - switch layout on quick view
  */
-function _renderWeather (hDisp, wDisp) {
+function _renderWeather (hDisp, wDisp, isQuickView) {
   // define date style
 	_ctx.fillStyle = _getColor("foreground");
 	_ctx.textAlign = "center";
@@ -157,7 +178,31 @@ function _renderWeather (hDisp, wDisp) {
 	var wsDimens = _ctx.measureText(wString);
 	var posY = (hDisp / 2) - (wsDimens.height / 2);
 	// draw weather
-	_ctx.fillText(wString, (wDisp / 2), posY, wDisp);
+	if (isQuickView) {
+		_ctx.fillText(wString, (wDisp / 2), 80, wDisp);
+	} else {
+		_ctx.fillText(wString, (wDisp / 2), posY, wDisp);	
+	}
+}
+
+/**
+ * render function for complete watchface
+ * @param dt - current dateTime
+ * @param hDisp - unobstructedHeigth from canvas
+ * @param wDisp - unobstructedWidth from canvas
+ * @param isQuickView - switch layout on quick view
+ */
+function _renderWatchface (dt, hDisp, wDisp, isQuickview) {
+	// render time
+	_renderTime(dt, wDisp, isQuickview);	
+	// render weather or date	
+	if (!_isMiddleRowHidden()) {
+		if (_shouldSwitch && _weatherData) {
+			_renderWeather(hDisp, wDisp, isQuickview);
+		} else {
+			_renderDate(dt, hDisp, wDisp, isQuickview);
+		}
+	}
 }
 
 /**
@@ -177,7 +222,7 @@ function initVariables (e, shouldSwitch, settingData, weatherData) {
 /**
  * render watchface
  */
-function renderWatchface () {
+function createWatchface () {
 	// clear screen
   _ctx.clearRect(0, 0, _ctx.canvas.clientWidth, _ctx.canvas.clientHeight);
   // get display dimensions
@@ -187,15 +232,11 @@ function renderWatchface () {
   var currentDateTime = new Date();
 	// render background
 	_renderBackground();
-  // render time
-	_renderTime(currentDateTime, wDisplay);	
-	// render weather or date	
-	if (!_isMiddleRowHidden()) {
-		if (_shouldSwitch && _weatherData) {
-			_renderWeather(hDisplay, wDisplay);
-		} else {
-			_renderDate(currentDateTime, hDisplay, wDisplay);
-		}
+	// check if quick view is visible
+	if (hDisplay === DISPLAYHEIGHT) {
+		_renderWatchface(currentDateTime, hDisplay, wDisplay, false);
+	} else {
+		_renderWatchface(currentDateTime, hDisplay, wDisplay, true);
 	}
 }
 
@@ -204,5 +245,5 @@ function renderWatchface () {
  */
 module.exports = {
 	init   : initVariables,
-	render : renderWatchface
+	create : createWatchface
 };

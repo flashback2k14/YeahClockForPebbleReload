@@ -51,7 +51,7 @@ rocky.on("draw", function (e) {
 	// init watchface
 	watchface.init(e, shouldSwitch, settingData, weatherData);
 	// render watchface
-	watchface.render();
+	watchface.create();
 });
 
 /**

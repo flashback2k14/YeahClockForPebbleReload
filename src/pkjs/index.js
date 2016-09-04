@@ -3,6 +3,7 @@
  */
 var api = require("./api");
 var url = require("./url");
+var storage = require("./storage");
 // clay settings page
 var Clay = require("./clay");
 var config = require("./config");
@@ -35,7 +36,7 @@ function _messagePostWeather (data) {
  */
 function _handleRestoreSettingsRequest () {
 	// Restore settings from localStorage and send to watch
-  var settings = JSON.parse(localStorage.getItem("clay-settings"));
+  var settings = JSON.parse(storage.get("clay-settings"));
   if (settings) {
 		_messagePostSettings(settings);
   }
@@ -79,7 +80,12 @@ function _openConfigPage () {
  * fired if pebble is ready
  */
 Pebble.addEventListener("ready", function (e) {
-	_openConfigPage();
+	// check if first run and open config page
+	if (!storage.exist("isFirstRun")) {
+		_openConfigPage();
+		storage.save("isFirstRun", false);
+	}
+	// restore setting if app is ready
   _handleRestoreSettingsRequest();
 });
 
